@@ -27,16 +27,20 @@ function App() {
   const [cart, setCart] = useState({});
   const [alert, setAlert] = useState(null);
 
-  const addToCart = (book, navigate) => {
+  const addToCart = (book, quantity, navigate, buy = false) => {
     setCart((prevCart) => ({
       ...prevCart,
-      [book]: (prevCart[book] || 0) + 1,
+      [book]: (prevCart[book] || 0) + quantity,
     }));
-    setAlert(`เพิ่ม ${book} ลงในตะกร้าแล้ว!`);
-    setTimeout(() => {
-      setAlert(null);
+    if (buy) {
       navigate('/cart');
-    }, 1000);
+    }
+    else {
+      setAlert(`เพิ่ม ${book} ลงในตะกร้าแล้ว!`);
+      setTimeout(() => {
+        setAlert(null);
+      }, 1000);
+    }
   };
 
   const updateCart = (book, qty) => {
@@ -55,30 +59,33 @@ function App() {
     let updatedCart = { ...cart }; // Make a copy of the cart to work with
     let totalPrice = 0;
     let discount = 0;
-  
+
     while (Object.keys(updatedCart).length > 0) {
       const uniqueBooks = Object.keys(updatedCart).filter((book) => updatedCart[book] > 0);
       const groupSize = Math.min(uniqueBooks.length, 7);
       const groupDiscount = discounts[groupSize] || 0;
-  
+
       uniqueBooks.forEach((book) => {
         const bookPrice = books.find(b => b.name === book).price;
         totalPrice += bookPrice;
         discount += bookPrice * groupDiscount;
-  
+
         updatedCart[book] -= 1;
         if (updatedCart[book] === 0) {
           delete updatedCart[book];
         }
       });
     }
-  
+
     return { totalPrice, discount, finalPrice: totalPrice - discount };
   };
 
+  const totalItemsInCart = Object.values(cart).reduce((total, qty) => total + qty, 0);
+
   return (
     <Router>
-      <NavigationBar />
+      <NavigationBar cartItemCount={totalItemsInCart} />
+
       <div className="container mx-auto p-4" style={{ fontFamily: "'Kanit', sans-serif" }}>
         {alert && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">{alert}</div>}
         <Routes>
@@ -92,24 +99,77 @@ function App() {
 
 const HomePage = ({ addToCart }) => {
   const navigate = useNavigate();
+  const [quantities, setQuantities] = useState(books.reduce((index, book) => {
+    index[book.name] = 0;
+    return index;
+  }, {}));
+
+  const addQuantity = (bookName) => {
+    setQuantities({
+      ...quantities,
+      [bookName]: quantities[bookName] + 1
+    });
+  };
+
+  const removeQuantity = (bookName) => {
+    setQuantities({
+      ...quantities,
+      [bookName]: Math.max(0, quantities[bookName] - 1)
+    });
+  };
+
   return (
     <div className="container mx-auto mt-5">
       <h2 className="text-center mb-4 text-2xl font-bold">โปรโมชั่นหนังสือ Harry Potter</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center">
         {books.map((book) => (
           <div key={book.name} className="bg-white shadow-md rounded-lg overflow-hidden">
-            <img src={book.image} className="w-full h-48 object-cover" alt={book.name} />
+            <img src={book.image} className="w-full h-52 object-cover" alt={book.name} />
             <div className="p-4">
               <h5 className="text-lg font-bold">{book.name}</h5>
               <p className="text-gray-700 my-2">
                 หนังสือชุด Harry Potter เหมาะสำหรับแฟนๆ ที่ชื่นชอบเรื่องราวแห่งเวทมนตร์
               </p>
-              <button
-                className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-                onClick={() => addToCart(book.name, navigate)}
-              >
-                เพิ่มลงในตะกร้า {book.price} บาท
-              </button>
+              <div className="row flex justify-center">
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={() => removeQuantity(book.name)}
+                >
+                  -
+                </button>
+                <p className="text-gray-700 mx-4 my-2">
+                  {quantities[book.name]}
+                </p>
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={() => addQuantity(book.name)}
+                >
+                  +
+                </button>
+              </div>
+
+              <div className="row flex justify-center">
+                <button
+                  className={`px-4 py-2 mt-3 rounded w-auto ${quantities[book.name] === 0 ? 'bg-gray-200' : 'bg-blue-500 text-white'}`}
+                  onClick={() => {
+                    addToCart(book.name, quantities[book.name], navigate, false);
+                    setQuantities({ ...quantities, [book.name]: 0 });
+                  }}
+                  disabled={quantities[book.name] === 0}
+                >
+                  เพิ่มลงในตะกร้า
+                </button>
+                <button
+                  className={`px-4 py-2 mt-3 ml-2 rounded w-auto ${quantities[book.name] === 0 ? 'bg-gray-200' : 'bg-green-500 text-white'}`}
+                  onClick={() => {
+                    addToCart(book.name, quantities[book.name], navigate, true);
+                    setQuantities({ ...quantities, [book.name]: 0 });
+                  }}
+                  disabled={quantities[book.name] === 0}
+                >
+                  ซิ้อสินค้า {book.price * quantities[book.name]} บาท
+                </button>
+              </div>
             </div>
           </div>
         ))}
