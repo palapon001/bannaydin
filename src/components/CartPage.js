@@ -28,7 +28,7 @@ const CartPage = ({ cart, calculateTotal, updateCart, deleteCart }) => {
           </ul>
         )}
       </div>
-      <div className="mb-3 text-red-500 px-4 py-3 rounded relative" style={{ fontFamily: "'Kanit', sans-serif", fontSize: "12px" }}>
+      <div className="mb-3 text-red-500 px-4 py-3 rounded relative" style={{ fontSize: "12px" }}>
         <p>*ซื้อหนังสือไม่ซ้ำกัน 2 เล่ม จะได้รับส่วนลด 10% ของ 2 เล่มนั้น</p>
         <p>*ซื้อหนังสือไม่ซ้ำกัน 3 เล่ม จะได้รับส่วนลด 20% ของ 3 เล่มนั้น</p>
         <p>*ซื้อหนังสือไม่ซ้ำกัน 4 เล่ม จะได้รับส่วนลด 30% ของ 4 เล่มนั้น</p>
