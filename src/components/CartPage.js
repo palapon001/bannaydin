@@ -1,19 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const CartPage = ({ cart, calculateTotal, updateCart }) => {
-  const { totalPrice, discount, finalPrice } = calculateTotal();
+const CartPage = ({ cart, calculateTotal, updateCart, deleteCart }) => {
+  const {totalPrice, discount, finalPrice} = calculateTotal
   const isEmpty = Object.keys(cart).length === 0;
-  const [alert, setAlert] = useState(null);
-
-  const buyAction = () => {
-    const booksInCart = Object.keys(cart);
-    booksInCart.forEach((book) => updateCart(book, 0));
-    setAlert("ซื้อสำเร็จ!");
-    setTimeout(() => {
-      setAlert(null);
-    }, 3000); // Increased timeout to 3000ms for better user experience
-  };
 
   return (
     <div className="container mx-auto mt-5 ">
@@ -56,9 +46,8 @@ const CartPage = ({ cart, calculateTotal, updateCart }) => {
       )}
       <Link to="/" className="bg-blue-500 text-white px-4 py-2 rounded mt-3 inline-block">กลับไปเลือกหนังสือ</Link>
       {!isEmpty && (
-       <button className="bg-green-500 text-white px-4 py-2 ml-5 rounded mt-3 inline-block" onClick={buyAction}>ซื้อ</button>
+        <button className="bg-green-500 text-white px-4 py-2 ml-5 rounded mt-3 inline-block" onClick={() => deleteCart()}>ซื้อ</button>
       )}
-       {alert && <div className="bg-green-100 border border-green-400 text-green-700 mt-5 px-4 py-3 rounded relative">{alert}</div>}
     </div>
   );
 };
