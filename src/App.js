@@ -27,6 +27,14 @@ function App() {
   const [cart, setCart] = useState({});
   const [alert, setAlert] = useState(null);
 
+  const deleteCart = () => {
+    setCart({});
+    setAlert("ซื้อสำเร็จ!");
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+
   const addToCart = (book, quantity, navigate, buy = false) => {
     setCart((prevCart) => ({
       ...prevCart,
@@ -55,31 +63,7 @@ function App() {
     });
   };
 
-  const calculateTotal = () => {
-    let updatedCart = { ...cart }; // Make a copy of the cart to work with
-    let totalPrice = 0;
-    let discount = 0;
-
-    while (Object.keys(updatedCart).length > 0) {
-      const uniqueBooks = Object.keys(updatedCart).filter((book) => updatedCart[book] > 0);
-      const groupSize = Math.min(uniqueBooks.length, 7);
-      const groupDiscount = discounts[groupSize] || 0;
-
-      uniqueBooks.forEach((book) => {
-        const bookPrice = books.find(b => b.name === book).price;
-        totalPrice += bookPrice;
-        discount += bookPrice * groupDiscount;
-
-        updatedCart[book] -= 1;
-        if (updatedCart[book] === 0) {
-          delete updatedCart[book];
-        }
-      });
-    }
-
-    return { totalPrice, discount, finalPrice: totalPrice - discount };
-  };
-
+  const resultCalculateTotal = calculateTotal(cart, books, discounts);
   const totalItemsInCart = Object.values(cart).reduce((total, qty) => total + qty, 0);
 
   return (
@@ -90,7 +74,7 @@ function App() {
         {alert && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">{alert}</div>}
         <Routes>
           <Route path="/" element={<HomePage addToCart={addToCart} />} />
-          <Route path="/cart" element={<CartPage cart={cart} calculateTotal={calculateTotal} updateCart={updateCart} />} />
+          <Route path="/cart" element={<CartPage cart={cart} calculateTotal={resultCalculateTotal} updateCart={updateCart} deleteCart={deleteCart} />} />
         </Routes>
       </div>
     </Router>
@@ -178,8 +162,10 @@ const HomePage = ({ addToCart }) => {
   );
 };
 
+export default App;
+
 export const calculateTotal = (cart, books, discounts) => {
-  let updatedCart = { ...cart };
+  let updatedCart = { ...cart }; // Make a copy of the cart to work with
   let totalPrice = 0;
   let discount = 0;
 
@@ -202,6 +188,3 @@ export const calculateTotal = (cart, books, discounts) => {
 
   return { totalPrice, discount, finalPrice: totalPrice - discount };
 };
-
-
-export default App;

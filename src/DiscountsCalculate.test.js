@@ -27,9 +27,9 @@ test('calculate total for 2 different books with 10% discount', () => {
   };
   const { totalPrice, discount, finalPrice } = calculateTotal(cart, books, discounts);
 
-  expect(totalPrice).toBe(200); // 100 + 100
-  expect(discount).toBe(20); // 10% of 200
-  expect(finalPrice).toBe(180); // 200 - 20
+  expect(totalPrice).toBe(200);
+  expect(discount).toBe(20); 
+  expect(finalPrice).toBe(180); 
 });
 
 test('calculate total for 3 different books with 20% discount', () => {
@@ -107,19 +107,3 @@ test('calculate total for 4 different books with 30% discount', () => {
     expect(finalPrice).toBe(280); // 700 - 420
   });
 
-test('calculate total for 7 different books with 60% discount', () => {
-  const cart = {
-    "แฮร์รี่ พอตเตอร์กับศิลาอาถรรพ์": 1,
-    "แฮร์รี่ พอตเตอร์กับห้องแห่งความลับ": 1,
-    "แฮร์รี่ พอตเตอร์กับนักโทษแห่งอัซคาบัน": 1,
-    "แฮร์รี่ พอตเตอร์กับถ้วยอัคนี": 1,
-    "แฮร์รี่ พอตเตอร์กับภาคีนกฟีนิกซ์": 1,
-    "แฮร์รี่ พอตเตอร์กับเจ้าชายเลือดผสม": 1,
-    "แฮร์รี่ พอตเตอร์กับเครื่องรางยมทูต": 1,
-  };
-  const { totalPrice, discount, finalPrice } = calculateTotal(cart, books, discounts);
-
-  expect(totalPrice).toBe(700); // 100 * 7
-  expect(discount).toBe(420); // 60% of 700
-  expect(finalPrice).toBe(280); // 700 - 420
-});
